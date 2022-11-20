@@ -53,6 +53,10 @@ def predict_rank(w, b, x):
 		rank_idx += 1
 	return yt_hat
 
+def run_pranking(data_path, review_count):
+	reviews = util.get_reviewers(data_path, review_count)
+	w, b = pranking(reviews)
+	print(w,b)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Run ranking algorithm')
