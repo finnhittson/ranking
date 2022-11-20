@@ -19,4 +19,4 @@ def get_reviewers(ratings_data_path, min_review_count):
 				ratings.append(float(row[2]))
 		if review_count == min_review_count:
 			total_reviews.append(ratings)
-	return numpy.array(total_reviews)
+	return np.array(total_reviews).T
