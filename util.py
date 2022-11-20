@@ -8,7 +8,9 @@ def get_reviewers(ratings_data_path, min_review_count):
 		userId = 1
 		review_count = 0
 		ratings = []
-		for row in spamreader:
+		for idx, row in enumerate(spamreader):
+			if idx == 0:
+				continue
 			if review_count == min_review_count:
 				total_reviews.append(ratings)
 				ratings = []
