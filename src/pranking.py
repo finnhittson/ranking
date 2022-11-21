@@ -8,7 +8,6 @@ b = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
 
 def pranking(reviews, cycles):
 	reviews = np.array(reviews)
-	reviews = np.delete(reviews, 0, 1)
 
 	for _ in range(cycles):
 		random_viewer = int(random.uniform(0,len(reviews.T)))
@@ -59,10 +58,10 @@ def predict_rank(w_dot_x, b):
 	return yt_hat
 
 def run_pranking(data_path, review_count):
-
-	reviews = util.get_reviewers(data_path, review_count)
-	util.write_to_file(reviews, 'data/5 00_plus_reviews.csv')
-	w, b = pranking(reviews, 500)
+	test_reviews, train_reviews = util.get_reviewers(data_path, review_count)
+	#util.write_to_file(reviews, 'data/500_plus_reviews.csv')
+	w, b = pranking(train_reviews, 0)
+	for 
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Run ranking algorithm')

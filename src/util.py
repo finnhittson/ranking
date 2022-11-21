@@ -29,13 +29,13 @@ def get_reviewers(ratings_data_path, min_review_count):
 				userId += 1
 				ratings = []
 				review_count = 0
-
 	return split_data(total_reviews, 0.25)
 
 def split_data(data, ratio):
 	data = np.array(data)
 	userIds = data[:,0]
 	data = np.delete(data, 0, 1)
+	np.random.shuffle(data)
 	test_reviews = data[:, 0:math.floor(len(data.T) * ratio)]
 	test_reviews = np.concatenate((np.array([userIds]).T, test_reviews), 1)
 	train_reviews = np.delete(data, 0, 1)
