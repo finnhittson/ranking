@@ -30,7 +30,16 @@ def get_reviewers(ratings_data_path, min_review_count):
 				ratings = []
 				review_count = 0
 
-	return total_reviews
+	return split_data(total_reviews, 0.25)
+
+def split_data(data, ratio):
+	data = np.array(data)
+	userIds = data[:,0]
+	data = np.delete(data, 0, 1)
+	test_reviews = data[:, 0:math.floor(len(data.T) * ratio)]
+	test_reviews = np.concatenate((np.array([userIds]).T, test_reviews), 1)
+	train_reviews = np.delete(data, 0, 1)
+	return test_reviews, train_reviews
 
 def write_to_file(data, file_path):
 	with open(file_path, 'w', newline='') as f:
