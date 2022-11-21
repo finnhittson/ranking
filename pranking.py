@@ -6,57 +6,63 @@ import numpy as np
 
 b = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
 
-def pranking(reviews):
-	
-	random_viewer = 2#int(random.uniform(0,len(reviews.T)))
-	yt = reviews[:,random_viewer]
-	reviews = np.delete(reviews,random_viewer,1)
-	
-	w = np.array([0] * len(reviews.T))
-	b = [0] * 10
-	len_b = len(b)
+def pranking(reviews, cycles):
+	reviews = np.array(reviews)
+	reviews = np.delete(reviews, 0, 1)
 
-	for idx, review in enumerate(reviews):
-				
-		yt_hat = predict(w, b, review)
-		if yt[idx] != yt_hat:
+	for _ in range(cycles):
+		random_viewer = int(random.uniform(0,len(reviews.T)))
+		np.random.shuffle(reviews)
+		target_rank = reviews[:,random_viewer]
+		reviews = np.delete(reviews,random_viewer,1)
+
+		w = np.array([0] * len(reviews))
+		b = [0] * 10
+		len_b = len(b)
+
+		for idx, review in enumerate(reviews.T):
 			
-			w_correction = []
-			for r in range(len_b):
-				if yt[idx] <= b[r]:
-					w_correction.append(-1)
-				else:
-					w_correction.append(1)
+			w_dot_x = w.dot(review)
+			predicted_rank = predict_rank(w_dot_x, b)
+			
+			if target_rank[idx] != predicted_rank:
+				
+				correction_vect = []
+				for r in range(len_b):
+					if math.floor(target_rank[idx]*2) <= r:
+						correction_vect.append(-1)
+					else:
+						correction_vect.append(1)
 
-			tau = []
-			for s in range(len_b):
-				if (w_dot_x - b[s]) * w_correction[s] <= 0: # incorrect prediction
-					tau.append(w_correction[s])
-				else: # correct prediction
-					tau.append(0)
+				tau = []
+				for r in range(len_b):
+					if (w_dot_x - b[r]) * correction_vect[r] <= 0: # incorrect
+						tau.append(correction_vect[r])
+					else: # correct
+						tau.append(0)
 
-			w = w + sum(tau) * review
-			for t in range(len_b):
-				b[t] = b[t] - tau[t]
+				w = w + sum(tau) * review
+				for t in range(len_b):
+					b[t] = b[t] - tau[t]
 
+		reviews = np.concatenate((reviews, np.array([target_rank]).T), axis=1)
+	
 	return w, b
 
-def predict_rank(w, b, x):
-
+def predict_rank(w_dot_x, b):
 	yt_hat = math.inf
-	w_dot_x = w.dot(x)
 	rank_idx = 0
 	while rank_idx < len(b):
 		if w_dot_x - b[rank_idx] < 0 and rank_idx < yt_hat:
 			yt_hat = rank_idx
-			rank_idx = len(b) + 1
 		rank_idx += 1
 	return yt_hat
 
 def run_pranking(data_path, review_count):
+
 	reviews = util.get_reviewers(data_path, review_count)
-	w, b = pranking(reviews)
-	print(w,b)
+	util.write_to_file(reviews, 'data/5 00_plus_reviews.csv')
+	w, b = pranking(reviews, 500)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Run ranking algorithm')
@@ -73,4 +79,4 @@ if __name__ == '__main__':
   parser.set_defaults(review_count = 100)
   args = parser.parse_args()
 
-  pranking(args.path, args.review_count)
+  run_pranking(args.path, args.review_count)
