@@ -23,28 +23,26 @@ def get_reviewers(ratings_data_path, min_review_count):
 				review_count += 1
 				ratings.append(float(row[1]))
 
-			if review_count == min_review_count:# and idx < 500000:
-				ratings = [userId] + ratings
+			if review_count == min_review_count:# and len(total_reviews) <= 7542:
+				#ratings = [userId] + ratings
 				total_reviews.append(ratings)
 				userId += 1
 				ratings = []
 				review_count = 0
-	return split_data(total_reviews, 0.25)
+			if len(total_reviews) > 7542 and False:
+				break
+	return split_data(total_reviews, 0)
 
 def split_data(data, ratio):
 	data = np.array(data)
-	userIds = data[:,0]
-	data = np.delete(data, 0, 1)
 	np.random.shuffle(data)
 	test_reviews = data[:, 0:math.floor(len(data.T) * ratio)]
-	#test_reviews = np.concatenate((np.array([userIds]).T, test_reviews), 1)
-	train_reviews = np.delete(data, 0, 1)
+	train_reviews = data[:, math.floor(len(data.T) * ratio):]
 	return test_reviews, train_reviews
 
 def write_to_file(data, file_path):
 	with open(file_path, 'w', newline='') as f:
 		write = csv.writer(f)
-		for line in data:
-			userId = line.pop(0)
+		for idx, line in enumerate(data):
 			for rating in line:
-				write.writerow([userId, rating])
+				write.writerow([idx, rating])
