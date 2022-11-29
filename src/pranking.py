@@ -84,7 +84,7 @@ def run_pranking(data_path, review_count):
 	print("\n {}%".format(correct_count))
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description='Run ranking algorithm')
+  parser = argparse.ArgumentParser(description='Run perceptron ranking algorithm')
   parser.add_argument(
 		'path',
 		metavar='PATH',
