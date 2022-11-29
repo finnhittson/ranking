@@ -34,12 +34,14 @@ def get_reviewers(ratings_data_path, min_review_count):
 				break
 	return split_data(total_reviews, 0)
 
+
 def split_data(data, ratio):
 	data = np.array(data)
 	np.random.shuffle(data)
 	test_reviews = data[:, 0:math.floor(len(data.T) * ratio)]
 	train_reviews = data[:, math.floor(len(data.T) * ratio):]
 	return test_reviews, train_reviews
+
 
 def write_to_file(data, file_path):
 	with open(file_path, 'w', newline='') as f:
@@ -48,15 +50,19 @@ def write_to_file(data, file_path):
 			for rating in line:
 				write.writerow([idx, rating])
 
+
 def get_queries(data_path):
-	x = []
+	X = []
+	y = []
 	with open(data_path, newline = '') as csvfile:
 		spamreader = csv.reader(csvfile, delimiter = ' ', quotechar = '|')
 		for idx, query in enumerate(spamreader):
 			x_i = []
 			for jdx, element in enumerate(query):
 				if jdx == 0:
-					x_i.append(element)
+					y.append(element)
 				elif jdx > 1 and jdx < 27:
 					x_i.append(re.sub(r'^.*?:', '', element))
-			x.append(x_i)
+			X.append(x_i)
+	return X, y
+
