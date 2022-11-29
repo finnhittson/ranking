@@ -33,14 +33,14 @@ def forward_propagation(W1, b1, W2, b2, X):
     
     return Z1, A1, Z2, A2
 
-def backward_propagation(A1, A2, W2, Z1, Z2, X, y, m):
+def backward_propagation(A1, A2, W2, Z1, Z2, X, y):
     dZ2 = A2 - encoder(y)
-    dW2 = 1 / m * dZ2.dot(A1.T)
-    db2 = np.expand_dims(1 / m * np.sum(dZ2, axis=1), axis = 1)
+    dW2 = dZ2.dot(A1.T)
+    db2 = np.expand_dims(np.sum(dZ2, axis=1), axis = 1)
     
     dZ1 = W2.dot(dZ2) * relu_p(Z1)
-    dW1 = 1 / m * dZ1.dot(X.T)
-    db1 = np.expand_dims(1 / m * np.sum(dZ1, axis=1), axis = 1)
+    dW1 = dZ1.dot(X.T)
+    db1 = np.expand_dims(np.sum(dZ1, axis=1), axis = 1)
     
     return dW1, db1, dW2, db2
 
@@ -53,8 +53,11 @@ def update_parameters(W1, dW1, b1, db1, W2, dW2, b2, db2, alpha):
     
     return W1, b1, W2, b2
 
-def gradient_descent(X, y, iterations, alpha, m):
+def compute_gradient(X, y, W1, b1, W2, b2, alpha):
     Z1, A1, Z2, A2 = forward_propagation(W1, b1, W2, b2, X)
-    dW1, db1, dW2, db2 = backward_propagation(A1, A2, W2, Z1, Z2, X, y, m)
+    dW1, db1, dW2, db2 = backward_propagation(A1, A2, W2, Z1, Z2, X, y)
     W1, b1, W2, b2 = update_parameters(W1, dW1, b1, db1, W2, dW2, b2, db2, alpha)
     return W1, b1, W2, b2
+
+def get_predictions(A):
+    return np.argmax(A.T, 1)
