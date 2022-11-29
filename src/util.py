@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 import math
+import re
 
 def get_reviewers(ratings_data_path, min_review_count):
 	total_reviews = []
@@ -46,3 +47,16 @@ def write_to_file(data, file_path):
 		for idx, line in enumerate(data):
 			for rating in line:
 				write.writerow([idx, rating])
+
+def get_queries(data_path):
+	x = []
+	with open(data_path, newline = '') as csvfile:
+		spamreader = csv.reader(csvfile, delimiter = ' ', quotechar = '|')
+		for idx, query in enumerate(spamreader):
+			x_i = []
+			for jdx, element in enumerate(query):
+				if jdx == 0:
+					x_i.append(element)
+				elif jdx > 1 and jdx < 27:
+					x_i.append(re.sub(r'^.*?:', '', element))
+			x.append(x_i)
