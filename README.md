@@ -1,4 +1,4 @@
 Run the following to exeute pranking.py
 ``` python
-python src/pranking.py [csv data file]
+python src/pranking.py src/100_small.csv
 ```
