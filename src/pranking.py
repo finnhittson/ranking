@@ -11,7 +11,9 @@ import matplotlib.pyplot as plt
 # pranking algorithm
 def pranking(reviews, cycles):
 	reviews = np.array(reviews)
-	w = np.zeros((1, len(reviews) - 1)) # weights and bias initialized to zero
+
+	# weights and bias initialized to zero
+	w = np.zeros((1, len(reviews) - 1))
 	b = np.zeros((1, 10))
 
 	for _ in range(cycles):
@@ -25,8 +27,8 @@ def pranking(reviews, cycles):
 		for idx, x in enumerate(reviews.T):
 
 			# x is the set of reviews from different people
-			w_dot_x = w.dot(np.array([x]).T)
-			predicted_rank = predict_rank(w_dot_x[0][0], b)
+			w_dot_x = w.dot(np.array([x]).T)[0][0]
+			predicted_rank = predict_rank(w_dot_x, b)
 
 			# if predicted rank is wrong then update w and b
 			if target_rank[idx] != predicted_rank:
@@ -40,7 +42,7 @@ def pranking(reviews, cycles):
 				
 				tau = []
 				for r in range(len(b[0])):
-					if (w_dot_x[0][0] - b[0][r]) * correction_vect[r] <= 0: # incorrect
+					if (w_dot_x - b[0][r]) * correction_vect[r] <= 0: # incorrect
 						tau.append(correction_vect[r])
 					else: # correct
 						tau.append(0)
@@ -80,7 +82,7 @@ def run_pranking(data_path, review_count):
 	print(b)
 
 	# evaluate
-	print("eval")
+	print("\neval")
 	correct_count = 0
 	random_viewer = int(random.uniform(0,len(train_reviews)))
 	true_ranks = copy.copy(train_reviews[random_viewer, :])
@@ -88,15 +90,15 @@ def run_pranking(data_path, review_count):
 	predicted_rank = []
 	
 	for idx, review in enumerate(train_reviews.T):
-		
 		predicted_rank.append(predict_rank(w.dot(review), b) / 2)
-
+		if idx % 5 == 0 and False: 
+			print(w.dot(review), true_ranks[idx])
 		if predicted_rank[-1] == true_ranks[idx]:
 			correct_count += 1
 
 	#print(np.array(predicted_rank)[:15])
 	#print(true_ranks[:15])
-	print("\n {}%".format(correct_count))
+	print(" {}%".format(correct_count))
 
 
 if __name__ == '__main__':
