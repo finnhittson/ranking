@@ -42,7 +42,7 @@ def h(n):
     #print(f"normalized: {n / np.linalg.norm(n)}")
     #print(1 / (1 + np.exp(- n / np.linalg.norm(n))))
     #print()
-    return 1 / (1 + np.exp(- n / np.linalg.norm(n)))
+    return 1 / (1 + np.exp(-n))
 
 
 

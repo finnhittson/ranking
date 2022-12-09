@@ -48,10 +48,10 @@ def pranking(reviews, cycles):
 						tau.append(0)
 				
 				# update w and b
-				w = w + sum(tau) * x
+				w = w + sum(tau) * x / 100
 				for r in range(len(b[0])):
 					b[0][r] = b[0][r] - tau[r]
-			
+
 		# re-append target ranks to total data set
 		reviews = np.concatenate((reviews, np.array([target_rank])), axis=0)
 	
@@ -77,12 +77,11 @@ def run_pranking(data_path, review_count):
 	#util.write_to_file(train_reviews, 'data/100_quick.csv')
 	
 	# train
-	w, b = pranking(train_reviews,1)
+	w, b = pranking(train_reviews, 500)
 	print(w)
 	print(b)
 
 	# evaluate
-	print("\neval")
 	correct_count = 0
 	random_viewer = int(random.uniform(0,len(train_reviews)))
 	true_ranks = copy.copy(train_reviews[random_viewer, :])
@@ -91,14 +90,9 @@ def run_pranking(data_path, review_count):
 	
 	for idx, review in enumerate(train_reviews.T):
 		predicted_rank.append(predict_rank(w.dot(review), b) / 2)
-		if idx % 5 == 0 and False: 
-			print(w.dot(review), true_ranks[idx])
 		if predicted_rank[-1] == true_ranks[idx]:
 			correct_count += 1
-
-	#print(np.array(predicted_rank)[:15])
-	#print(true_ranks[:15])
-	print(" {}%".format(correct_count))
+	print("\nAccuracy {}%".format(correct_count))
 
 
 if __name__ == '__main__':
@@ -116,4 +110,7 @@ if __name__ == '__main__':
   parser.set_defaults(review_count = 100)
   args = parser.parse_args()
 
+  start = time.time()
   run_pranking(args.path, args.review_count)
+  end = time.time()
+  print(f'elapsed: {end - start}')

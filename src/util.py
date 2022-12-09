@@ -5,27 +5,6 @@ import re
 import copy
 import random
 
-def get_reviews(ratings_data_path):
-	total_reviews = []
-	with open(ratings_data_path, newline = '') as csvfile:
-		spamreader = csv.reader(csvfile, delimiter = ',', quotechar = '|')
-		userId = -math.inf
-		reviews = []
-		for idx, row in enumerate(spamreader):
-			if idx == 0 and row[0] == 'userId':
-				continue
-
-			if userId != int(row[0]):
-				if len(reviews) != 0:
-					total_reviews.append(reviews)
-				userId = int(row[0])
-				reviews = []
-
-			if userId == int(row[0]):
-				reviews.append(float(row[2]))
-	return total_reviews
-
-
 def get_n_reviews(ratings_data_path, review_count):
 	total_reviews = []
 	
@@ -92,7 +71,6 @@ def get_all_reviewers(ratings_data_path, min_movie_count):
 			userId_list.append(userId)
 
 		matched_reviewers, reviews_idx = find_common_movies(data_indices, total_reviews, min_movie_count)
-		print(matched_reviewers)
 		file_path = 'data/new_100_plus_reviews.csv'
 		write_common_users(matched_reviewers, reviews_idx, total_reviews, file_path, userId_list)
 	return 0
@@ -134,38 +112,24 @@ def overlap(list1, list2):
 	return overlap
 
 
-def get_common_users(master_list, total_reviews):
-	for pair in master:
-		print("HERE")
-
-
 def sparsify(movieIds, reviews):
 	movie_count = 62000
-	#movie_count = 20
 	if len(movieIds) != len(reviews):
 		return None
-	sparse_bitch = []
+	sparse_vector = []
 	movie_idx = 0
 	for i in range(movie_count):
 		if movie_idx < len(movieIds) and movieIds[movie_idx] == i:
-			sparse_bitch.append(reviews[movie_idx])
+			sparse_vector.append(reviews[movie_idx])
 			movie_idx += 1
-		else: sparse_bitch.append(0)
-	return sparse_bitch
+		else: sparse_vector.append(0)
+	return sparse_vector
 
 
 def illogical_and(a,b):
 	if a != 0 and b != 0:
 		return True
 	return False
-
-
-def review_sum(review_list):
-	i = 0
-	for review in review_list:
-		if review != 0:
-			i += 1
-	return i
 
 
 def append_sort(all_data_indices, add_me_sum, idx):
@@ -227,6 +191,6 @@ def make_data(reviewers, movies_watched):
 	for reviwer in range(reviewers):
 		reviews = []
 		for movie in range(movies_watched):
-			reviews.append(int(random.uniform(1,11)) / 2)
+			reviews.append(int(random.uniform(0,11)) / 2)
 		data.append(reviews)
 	write_to_file(data, 'data/toy_data.csv')
